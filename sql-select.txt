@@ -1,0 +1,179 @@
+order:
+select * from Person order by age asc; сортировка по возрастанию
+select * from Person order by age desc; сортировка по убыванию
+select * from Person order by name asc, age desc; 
+select * from Person order by 2; по номеру колонки
+
+union:
+select name,age from Person where age > 30 union select name,age from Person where age < 24;
+нельзя сортировать один селект
+select name,age from Person where age > 30 union ALL select name,age from Person where age < 24; вывести поля без distinct
+
+несколько таблиц:
+select * from Person, Adress where Person.id = Adress.person_id;
+select Person.name, Person.age, Adress.street, Adress.number from Person, Adress where Person.id = Adress.person_id;
+select * from Person p, Adress a where p.id = a.person_id; aliases сокращённая запись
+select p.name, p.age, a.street, a.number from Person p, Adress a where p.id = a.person_id;
+select p.name, p.age, a.street, a.number from Person as p, Adress as a where p.id = a.person_id;
+select p.name, p.age, a.street, a.number from Person as p, Adress as a where p.id = a.person_id; and street = 'pushkina';
+select Person.*, Adress.street from Person, Adress where Person.id = Adress.person_id;
+
+select * from Employee as e1, Employee as e2 where e1.manager = e2.id;
+
+inner join:
+select * from Person, Adress; аналог select * from Person join Adress;
+select * from Person join Adress on Person.id = Adress.id;
+select * from Person natural join Adress; сопоставление id обоих таблиц
+select * from Employee as e1 join Employee as e2 on e1.manager = e2.id;
+Порядок обработки:
+from -> on -> where -> distinct -> union -> order by
+
+outer join:
+select * from Person left outer join Adress on Person.id = Adress.person_id;
+select * from Person left join Adress on Person.id = Adress.person_id;
+select * from Person right outer join Adress on Person.id = Adress.person_id;
+
+select * from Person left join Adress on Person.id = Adress.person_id union select * from Person right join Adress on Person.id = Adress.person_id; Full outer join!!! показывает записи с пустуми полями из двух таблиц
+
+агрегирующие функции:
+select max(age) from Person; - максимальный
+select min(age) from Person; - минимальный
+select avg(age) from Person; - средний
+select count(age) from Person; - коль-во записей, count - не учитывает поля null
+select sum(age) from Person; - сумма
+select sum(age), min(age), count(age), count(name) from Person;
+select count(*) from Person;
+select count(distinct name) from Person; - полдсчёт уникальных имён
+
+group_by:
+select name from Person group by name;
+select name, avg(age) from Person group by name; - 
+select name, avg(age) from Person where age <> 25 group by name having avg(age) <> 22; - 
+from -> where -> group by -> having -> distinct -> union -> order by
+select name,age, count(id) from Person group by name, age; группировка по двум полям
+
+Подзапросы:
+select * from Person where age = (select max(age) from Person);
+select * from Person as p where exists (select * from Adress); Если подзапрос вернул True то запрос выполняется.
+select * from Person as p where not exists (select * from Adress);
+select * from Person as p where id = any (select person_id from Adress as a where a.person_id = p.id); id = any / some - есть ещё all (проверяет совместимость со всеми записями)
+select (select avg(age) from Person) as PersonData;
+select name, age from (select name,age from Person) as PersonTable;
+
+AdvancedSQL:
+select cast(name as char), cast(age * 2 as char) from Person; - cast приведение типов
+select name, age from Person where age = cast('0025' as char);
+select name, case when age > 40 then 'old' when age > 23 then 'middle' else 'young' end from Person; - конструкция case when $VAR then 'STR'
+select * from Person where name = coalesce(name, 'No name');
+select * from Person where name = nullif(name, '0');
+select * from Person where (name, age) = ('Max', 25); 
+select * from Person where (name, age) <> ('Max', 25); 
+intersect, expect - нету в mysql, но есть в других БД
+
+insert:
+insert into Person (id, name, age) values (2,'Mike', 33);
+insert into Person values (4,'Den', 34), (5,'Brown', 35);
+insert into Person (id, name, age) select id+1, name, age+1 from Person where id = 8;
+
+delete:
+delete from Person; - удаление всех записей из Person
+delete from Person where id = 8; 
+delete from Person where id > 8; 
+delete from Person where id in (5,6,7);
+delete from Person where id =3 and name is NULL;
+delete from Person where id = (select id from Person where name is null); - в mysql нельзя получать и удалять одновременно из одной таблицы
+
+update:
+update Person set age=55 where id = 3;
+update Person set name='John', age=44 where id = 3;
+update Person set age = age + 1;
+update Person set name = 'John' where id = (select max(id) from Person);
+
+тригеры:
+show triggers;
+create trigger insertName before/after insert/update/delete on TableName for each insert into TableName2 (id,street, number,person_id) values (...)
+delimiter // - установить delemiter в mysql
+drop trigger TriggerName;  - удалить тригер
+
+транзакции:
+start transaction; select * from Person; commit;  - подтверждение транзакции
+start transaction; select * from Person; rollback; - откат транзакции
+start transaction; insert into Person values(7, 'Max', 36); set autocommit = 1;
+begin work; insert into Person values(7, 'Max', 39); commit work;
+start transaction read only; select  * from Person;
+start transaction read write; insert into Person values(7, 'Max', 36);
+start transaction; insert into Person values(7, 'Max', 36); savepoint myPoint; insert into Person values(8, 'Mike', 44); rollback to save point myPoint; - откат к myPoint
+две транзакции - решение lock:
+start transaction; lock table Person write; insert into Person values(16, 'Max', 44); unlock tables; commit; - можно lock table TableName read
+set transaction isolation level serializable; start transaction; select * from Person; commit; - 4 уровня изоляции транзакций
+REPEATEBLE READ
+REPEATEBLE COMMIT - лочит запись
+SERIALIZABLE - лочит всю таблицу
+
+Создание БД и схем, таблиц:
+show databases; show schemas;
+create database TestDB; create schema TestDB;
+drop database TestDB;
+create table Student(id int, name varchar(50), age int);
+show create table Student;
+create table if not exists Student(id int, name varchar(50), age int);
+create table if not exists Student(id int auto_increment primary key comment 'some text', name varchar(50) not null, age int);
+describe Student;
+create table Student2 like Student;
+create table if not exists Student(id int, name varchar(50) not null, age int, primary key unique(id, age));
+create table StudentAddress(id int, street varchar(50), number int, studId int, foreign key(studId) references Student(id) on delete cascade/restrict/set null/set default/no action);
+create table StudentAddress(id int, street varchar(50), number int, studId int, foreign key(studId) references Student(id) on update no action);
+create table StudentAddress(id int storage disk, street varchar(50), number int, studId int);
+drop table StudentAddress;
+
+Изменение таблиц:
+alter table TableName add column address varchar(50);
+alter table TableName add address2 varchar(50);
+alter table TableName modify address int;
+alter table TableName change addr int;
+alter table TableName alter column add set default 0;
+alter table TableName drop address2 restrict/cascade;
+alter table TableName add contraint addFK foreign key(addr) references address(id);
+
+Индексы(нужны для быстрого поиска(при insert запись занимает больше времени)):
+create unique index ageIndex on Student(age);
+show indexes from Student;
+drop index ageIndex on Student;
+
+View(виртуальные таблицы которые представляют существующие таблицы(не занимают места)):
+create view MyView (PersonName, PersonAge) as sekect name, age from Person where age > 40;
+select * from MyView;
+show full tables in lessons where table_type like 'VIEW';
+drop view MyView restrict/cascade;
+
+хранимые процедуры:
+delimiter //
+create procedure testProc(in i int, out str varchar(50)) begin select name into str from Person where id = i; end//
+call testProc(5, @name)//
+select @name//
+drop procedure testProc//
+create function hola(s char(20)) returns char(50) begin return concat('Hello ', s, '!') end//
+select hola('world')//
+create procedure testProc(in i int, out str varchar(50)) begin declare i int default 5; set @i = 6; select name into str from Person where id = i; end//
+create procedure testProc(in i int, out str varchar(50)) begin if i>5 then select name into str from Person where id = i; else select age into str from Person where id=i; end if; end//
+create procedure testProc(in i int, out j int) begin set j=0; label1: loop set j=j+i; set i=i-1; if i>0 then iterate label1; end if; leave label1; end loop label1; end//
+
+курсоры(указание на запись):
+create procedure curDemo() 
+begin declare done int default false; 
+declare n varchar(50); declare a int; 
+declare cur cursor for select name,age from Person; 
+declare continue handler for not found set done = true; 
+open cur; 
+read_label; 
+loop; 
+fetch cur into n, a; if a<24 then delete from Person where age=a; 
+end if; 
+if done then leave rea_label; 
+end if; 
+end loop; 
+close cur; 
+end;//
+
+execute imidiate and prepare statement:
+prepare statement - защищает от sql иньекций, потому что знак вопроса и запускается быстрее, потому что компилируется
