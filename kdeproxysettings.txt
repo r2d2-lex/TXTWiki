@@ -1,0 +1,14 @@
+sh-4.4$ cat /root/kdeipsettings.txt 
+ProxyUrlDisplayFlags=15
+  
+[Proxy Settings]
+NoProxyFor=
+Proxy Config Script=
+ProxyType=1
+ReversedException=false
+ftpProxy=ftp://192.168.1.1 8080
+httpProxy=http://192.168.1.1 8080
+httpsProxy=http://192.168.1.1 8080
+socksProxy=socks://192.168.1.1 8080
+
+./.config/kioslaverc

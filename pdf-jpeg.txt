@@ -1,0 +1,3 @@
+convert -density 500 input.pdf output.jpg
+
+-density - DPI

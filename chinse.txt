@@ -1,0 +1,81 @@
+root@x3ip11:/home//.config/fcitx# dpkg --list | grep fcitx
+ii  fcitx                                  1:4.2.9.1-1ubuntu1.16.04.2                   all          Flexible Input Method Framework
+ii  fcitx-bin                              1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - essential binaries
+ii  fcitx-config-common                    0.4.8-3                                      all          graphic Fcitx configuration tool - common files
+ii  fcitx-config-gtk                       0.4.8-3                                      amd64        graphic Fcitx configuration tool - Gtk+ 3 version
+ii  fcitx-config-gtk2                      0.4.8-3                                      amd64        graphic Fcitx configuration tool - Gtk+ 2 version
+ii  fcitx-data                             1:4.2.9.1-1ubuntu1.16.04.2                   all          Flexible Input Method Framework - essential data files
+ii  fcitx-frontend-gtk2                    1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - GTK+ 2 IM Module frontend
+ii  fcitx-frontend-gtk3                    1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - GTK+ 3 IM Module frontend
+ii  fcitx-frontend-qt4                     1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - Qt4 IM Module frontend
+ii  fcitx-frontend-qt5:amd64               1.0.5-1                                      amd64        Free Chinese Input Toy of X - Qt5 IM Module frontend
+ii  fcitx-libpinyin                        0.3.3-2                                      amd64        Fcitx wrapper for libpinyin
+ii  fcitx-module-dbus                      1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - D-Bus module and IPC frontend
+ii  fcitx-module-quickphrase-editor        1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - Quick Phrase editor module
+ii  fcitx-module-x11                       1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - X11 module and XIM frontend
+ii  fcitx-modules                          1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - core modules
+ii  fcitx-pinyin                           1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - classic Pinyin engine
+ii  fcitx-table                            1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - table engine
+ii  fcitx-tools                            1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - various tools
+ii  fcitx-ui-classic                       1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - Classic user interface
+ii  gir1.2-fcitx-1.0                       1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - GObject introspection
+ii  libfcitx-config4:amd64                 1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - configuration support library
+ii  libfcitx-core0:amd64                   1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - library of core funtions
+ii  libfcitx-gclient0:amd64                1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - D-Bus client library for Glib
+ii  libfcitx-qt0:amd64                     1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - Meta package for Qt library
+ii  libfcitx-qt5-1:amd64                   1.0.5-1                                      amd64        Free Chinese Input Toy of X - D-Bus client libraries for Qt5
+ii  libfcitx-utils0:amd64                  1:4.2.9.1-1ubuntu1.16.04.2                   amd64        Flexible Input Method Framework - utility support library
+
+___________________________________
+
+
+apt install fcitx -y
+apt install fcitx-bin -y
+apt install fcitx-config-common -y
+apt install fcitx-config-gtk -y
+apt install fcitx-config-gtk2 -y
+apt install fcitx-data -y
+apt install fcitx-frontend-gtk2 -y
+apt install fcitx-frontend-gtk3 -y
+apt install fcitx-frontend-qt4 -y
+apt install fcitx-frontend-qt5:amd64 -y
+apt install fcitx-libpinyin -y
+apt install fcitx-module-dbus -y
+apt install fcitx-module-quickphrase-editor -y
+apt install fcitx-module-x11 -y
+apt install fcitx-modules -y
+apt install fcitx-pinyin -y
+apt install fcitx-table -y
+apt install fcitx-tools -y
+apt install fcitx-ui-classic -y
+apt install gir1.2-fcitx-1.0 -y
+apt install libfcitx-config4:amd64 -y
+apt install libfcitx-core0:amd64 -y
+apt install libfcitx-gclient0:amd64 -y
+apt install libfcitx-qt0:amd64 -y
+apt install libfcitx-qt5-1:amd64 -y
+apt install libfcitx-utils0:amd64 -y
+apt install 
+
+
+apt install sunpinyin-data
+___________________________________
+
+
+Start-Date: 2019-05-16  08:58:34
+Commandline: /usr/sbin/synaptic
+Requested-By: xudmin (1000)
+Install: gir1.2-fcitx-1.0:amd64 (1:4.2.9.1-1ubuntu1.16.04.2), fcitx-config-common:amd64 (0.4.8-3), fcitx-googlepinyin:amd64 (0.1.6-3), fcitx-libpinyin:amd64 (0.3.3-2), fcitx-config-gtk2:amd64 (0.4.8-3), fcitx-tools:amd64 (1:4.2.9.1-1ubuntu1.16.04.2), fcitx-config-gtk:amd64 (0.4.8-3), libgooglepinyin0:amd64 (0.1.2-4, automatic), fcitx-module-quickphrase-editor:amd64 (1:4.2.9.1-1ubuntu1.16.04.2)
+End-Date: 2019-05-16  08:58:47
+
+Start-Date: 2019-05-16  09:18:01
+Commandline: /usr/sbin/synaptic
+Requested-By: xudmin (1000)
+Remove: ibus-doc:amd64 (1.5.11-1ubuntu2.1), ibus-gtk:amd64 (1.5.11-1ubuntu2.1), ibus-gtk3:amd64 (1.5.11-1ubuntu2.1), ibus-libpinyin:amd64 (1.7.3-2), ibus-pinyin:amd64 (1.5.0-3ubuntu3), ibus:amd64 (1.5.11-1ubuntu2.1), libibus-1.0-5:amd64 (1.5.11-1ubuntu2.1), gir1.2-ibus-1.0:amd64 (1.5.11-1ubuntu2.1)
+End-Date: 2019-05-16  09:18:12
+
+Start-Date: 2019-05-16  09:55:08
+Commandline: /usr/sbin/synaptic
+Requested-By: xudmin (1000)
+Purge: fcitx-module-kimpanel:amd64 (1:4.2.9.1-1ubuntu1.16.04.2), fcitx-googlepinyin:amd64 (0.1.6-3), fcitx-module-cloudpinyin:amd64 (0.3.4-3), fcitx-ui-qimpanel:amd64 (2.1.2-1), fcitx-sunpinyin:amd64 (0.4.1-2build1), fcitx-table-wubi:amd64 (1:4.2.9.1-1ubuntu1.16.04.2)
+End-Date: 2019-05-16  09:55:18

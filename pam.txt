@@ -1,0 +1,2 @@
+pam-auth-update
+pam-auth-update --force

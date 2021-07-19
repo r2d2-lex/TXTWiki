@@ -1,0 +1,12 @@
+cat in.txt | tr -d '\r\n' > out.txt
+
+cat in.txt | tr -d '\n' > out.txt
+
+cat ./external_sites.py | tr -d '\r' > 
+
+
+/bin/remtr
+#!/bin/sh
+cat $1 | tr -d '\r' > /tmp/out.txt
+cat /tmp/out.txt > $1
+rm /tmp/out.txt

@@ -1,0 +1,24 @@
+ Openfire кэш
+Openfire использует кэш для эффективной работы. Но размер кэша по умолчанию может оказаться мал, если у Вас в джаббере подключено много пользователей/групп. При этом в логах об ошибках вы можете увидеть множество сообщений такого плана:
+Cache Roster was full, shrinked to 90% in 0ms.
+…
+Для решения этой проблемы вам следует добавить следующие параметры:
+
+cache.group.size = 5242880
+cache.group.maxLifetime = 3600000
+
+cache.username2roster.size = 5242880
+cache.username2roster.maxLifetime = 3600000
+
+cache.userGroup.size = 5242880
+cache.userGroup.maxLifetime = 3600000
+
+cache.userCache.size = 2097152
+cache.userCache.maxLifetime = 3600000
+
+cache.groupMeta.size = 2097152
+cache.groupMeta.maxLifetime = 3600000
+
+Добавлять новые настройки следует через вкладку Server -> Server Manager -> System Properties.
+После обновления настроек следует перезапустить службу.
+Ссылка на оригинал: http://lapitoop.ru/ 

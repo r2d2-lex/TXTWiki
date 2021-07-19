@@ -1,0 +1,12 @@
+Фиксация ячеек:
+Вид -> Фиксация ячейки
+
+
+
+user@localhost:~$ snap install libreoffice
+user@localhost:~$ sudo add-apt-repository ppa:libreoffice/ppa
+user@localhost:~$ sudo apt-get update
+user@localhost:~$ sudo apt-get install libreoffice
+
+Чтобы откатиться до предыдущей версии, в терминале выполните команду:
+user@localhost:~$ sudo apt-get install ppa-purge && sudo ppa-purge ppa:libreoffice/ppa

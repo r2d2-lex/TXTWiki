@@ -1,0 +1,2 @@
+xrandr -s 1440x900 -r 75
+xrandr -s 1440x900 -r 60

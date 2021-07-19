@@ -1,0 +1,6 @@
+ В файле /etc/network/interfaces добавляем/меняем
+
+iface eth0 inet static
+address *.*.*.*                        # ваш ip адресс
+netmask *.*.*.*                        # маска вашей сети
+hwaddress ether xx:xx:xx:xx:xx:xx      # желаемый мак

@@ -1,0 +1,27 @@
+mega.txt 
+
+#Свойства адаптера
+MegaCli64 -AdpAllinfo -a0 | less
+
+#Просмотр дисков
+MegaCli64 -PDList -a0 | grep 'Enclosure Device\|Slot'
+MegaCli64 -PDList -a0 | grep 'Enclosure Device\|Slot Number\|Firmware state'
+
+#Замена диска [252:7].
+
+#Именно так к нему в дальнейшем нужно обращаться.
+#Что бы заменить диск, нужно его перевести в offline, пометить как «пропавший» и удалить:
+
+MegaCli64 -PDOffline -PhysDrv [252:7] -a0
+MegaCli64 -PDMarkMissing -PhysDrv [252:7] -a0
+MegaCli64 -PDPrpRmv -PhysDrv [252:7] -a0
+
+#Потом нужно задать команду замены диска (эту команду выполнить уже после замены диска).
+
+MegaCli64 -PdReplaceMissing -PhysDrv [252:7] -Array0 -row7 -a0
+
+#Start rebuild
+MegaCli64 -PDRbld -Start -PhysDrv[252:7] -a0
+
+#Show rebuild
+MegaCli64 -PDRbld -ShowProg -PhysDrv [252:7] -aAll

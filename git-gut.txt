@@ -1,0 +1,8 @@
+Скорее всего, правильным решением в данном случае будет:
+
+git fetch --all
+git reset --hard origin/master
+
+Или если вы находитесь в другой ветке:
+
+git reset --hard origin/your_branch

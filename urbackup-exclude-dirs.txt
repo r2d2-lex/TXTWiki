@@ -1,0 +1,11 @@
+C:\WINDOWS\*;C:\Temp\*;C:\$GetCurrent\*;C:\$RECYCLE.BIN\*;C:\Program Files (x86)\Temp\*;C:\Intel\Logs\*;%windir%\temp\*;
+C:\Users\:\AppData\Local\Temp\*;C:\Users\:\AppData\LocalLow\Temp\*;C:\hiberfil.sys;C:\pagefile.sys;C:\swapfile.sys;
+C:\ESD\*;C:\RECYCLER\*;C:\Tmp\*;C:\Documents and Settings\:\Local Settings\Temp\*;
+
+Full:
+C:\WINDOWS\*;C:\Temp\*;C:\$GetCurrent\*;C:\$RECYCLE.BIN\*;C:\Program Files (x86)\Temp\*;C:\Intel\Logs\*;%windir%\temp\*;C:\Users\:\AppData\Local\Temp\*;C:\Users\:\AppData\LocalLow\Temp\*;C:\hiberfil.sys;C:\pagefile.sys;C:\swapfile.sys;C:\ESD\*;C:\RECYCLER\*;C:\Tmp\*;C:\Documents and Settings\:\Local Settings\Temp\*;
+
+\Local\Microsoft\Windows\History
+\Local\Microsoft\Media Player\Art Cache
+\Local Microsoft\Windows\Temporary Internet Files\
+\Roaming\Microsoft\Windows\Cookies

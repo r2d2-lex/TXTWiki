@@ -1,0 +1,18 @@
+dmesg | grep -i scan
+vim /etc/group
+cat /tmp/startbg-launchtime
+add-apt-repository ppa:robert-ancell/sane-backends
+apt-get update
+add-apt-repository ppa:rolfbensch/sane-git
+apt-get update && sudo apt-get install simple-scan sane-utils libsane libsane-common
+scanimage -L
+apt update
+apt full-upgrade
+cd /etc/init.d/
+./saned status
+./saned start
+systemctl enable saned
+./saned start
+systemctl start saned
+systemctl status saned
+ls -la

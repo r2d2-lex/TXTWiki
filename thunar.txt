@@ -1,0 +1,6 @@
+
+Создание ярлыка в thunar
+из рабочей папки:
+
+vim ./.config/gtk-3.0/bookmarks
+

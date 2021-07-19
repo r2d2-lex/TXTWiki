@@ -1,0 +1,2 @@
+genisoimage -o xu16v11all.iso ./xu16v11all
+genisoimage -joliet-long -J -o xu16v11allz.iso xu

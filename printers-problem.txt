@@ -1,0 +1,8 @@
+При проблемах с печатью я первым делом запускаю от имени администратора батник 
+
+setlocal
+net stop spooler
+TASKKILL /F /IM spoolsv.exe /T
+del /Q /s /F /A c:\WINDOWS\system32\spool\PRINTERS\*.*
+net start spooler
+cls

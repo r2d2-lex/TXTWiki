@@ -1,0 +1,11 @@
+ vim /etc/grub.d/40_custom
+
+menuentry "Microsoft Windows XP (on /dev/sda1)" {
+        insmod part_msdos
+        insmod ntfs
+        set root='(hd0,msdos1)'
+        search --no-floppy --fs-uuid --set EE98AF0598AECC01
+        drivemap -s (hd0) ${root}
+        chainloader +1
+}
+~                                                                                                                                                                                                         

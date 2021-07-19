@@ -1,0 +1,7 @@
+/home/xudmin/.config/autostart
+
+root@x3ip73:/home/post/.config/autostart# ls -la
+итого 20
+drwx------  2 post users 4096 сен  4 13:41 .
+drwxr-xr-x 10 post users 4096 сен  4 13:41 ..
+-r-xr-xr-x  1 root root  8481 сен  4 13:41 slimjet.desktop

@@ -1,0 +1,2 @@
+find ./ -type f -mtime +186 -print0 | xargs -0 ls -l
+xargs -0 rm -f

@@ -1,0 +1,12 @@
+
+
+Hope it ain't too late, but I think I figured out how to disable this.
+
+Seems that Vim 8 is enabling the viminfo feature by default (maybe another features are enabled by default that were disabled on previous versions of Vim). So you need to put in your ~/.vimrc or the new /etc/vim/vimrc.local file (if you want to set this as global - you'll need to create that file if you don't have one) the following:
+
+let skip_defaults_vim=1
+set viminfo=""
+
+The skip_defaults_vim tells Vim not to load the default Vim configuration file, defaults.vim (for example, located on my Gentoo box at /usr/share/vim/vim80/defaults.vim).
+
+Hope this works on your Mac, as that was driving me insane.

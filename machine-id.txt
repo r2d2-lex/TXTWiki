@@ -1,0 +1,6 @@
+root@x4ip20:~# cat /etc/machine-id 
+6742516e304545f7ad7b946451556c16
+root@x4ip20:~# rm /etc/machine-id 
+root@x4ip20:~# systemd-machine-id-setup 
+Initializing machine ID from random generator.
+root@x4ip20:~# cat /etc/machine-id 

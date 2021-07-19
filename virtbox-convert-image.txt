@@ -1,0 +1,1 @@
+vboxmanage clonehd ejabber.vdi ejabber.raw --format RAW

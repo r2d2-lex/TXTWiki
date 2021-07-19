@@ -1,0 +1,3 @@
+mtime: time of last modification (ls -l),
+ctime: time of last status change (ls -lc) and
+atime: time of last access (ls -lu).

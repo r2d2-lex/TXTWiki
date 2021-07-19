@@ -1,0 +1,6 @@
+Make Backup:
+dd_rescue /dev/sdb zalivka.img -l zlivka.log
+
+Restore Backup:
+
+dd_rescue --force zalivka.img /dev/sdX zalivka_restore.log 

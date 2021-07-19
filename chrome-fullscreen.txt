@@ -1,0 +1,4 @@
+"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe" --kiosk "http://stspp.ru"
+exit
+
+Первая строка открывает нам браузер. Ключ запуска —kiosk — запуск Google Chrome в полноэкранном режиме, url в кавычках — адрес, на который надо зайти сразу после запуска браузера.

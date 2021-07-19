@@ -1,0 +1,3 @@
+jpegoptim -m5 *.jpg
+
+convert Ариант_ариант.jpg -quality 5 Ариант_ариант.jpg

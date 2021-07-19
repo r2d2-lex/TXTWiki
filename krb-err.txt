@@ -1,0 +1,14 @@
+sh-4.4$ mount /home/setup/
+mount error(126): Required key not available
+Refer to the mount.cifs(8) manual page (e.g. man mount.cifs)
+sh-4.4$ ./kinit
+Password for user@DOMEN: 
+kinit: Clock skew too great while getting initial credentials
+
+
+
+
+Just renew ticket
+
+
+/usr/bin/krb5-auth-dialog
