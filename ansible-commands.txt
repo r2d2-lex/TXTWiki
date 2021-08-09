@@ -1,0 +1,31 @@
+    4  ansible --version
+    5  ansible all -m ping
+    6  ansible debi64 -m ping
+    7  ansible-inventory graph
+    8  ansible-inventory --graph
+    9  ansible debi64 -m setup
+   10  ansible debi64 -m setup | grep os
+   11  ansible test_servers -m shell -a 'uptime'
+   12  ansible test_servers -m shell -a 'ls -l'
+   13  ansible test_servers -m shell -a 'ls -la'
+   14  ansible test_servers -m shell -a 'ls -la | grep -a vim'
+   15  ls -l
+   16  vim test.txt
+   17  ansible test_servers -m copy -a 'src=./test.txt dest=/root'
+   18  ansible test_servers -m shell -a 'ls -l'
+   19  ansible test_servers -m file -a 'path=/root/test.txt state=absent' -b
+   20  ansible test_servers -m copy -a 'src=./test.txt dest=/root'
+   21  ansible test_servers -m file -a 'path=/root/test.txt state=absent'
+   22  ansible test_servers -m get_url -a 'url=https://www.opennet.ru/robots.txt' -b
+   23  ansible test_servers -m get_url -a 'url=https://www.opennet.ru/robots.txt dest=/root/' -b
+   24  ansible test_servers -m file -a 'path=/root/robots.txt state=absent'
+   25  ansible test_servers -m apt -a 'name=stress state=installed'
+   26  history 
+   27  ansible test_servers -m apt -a 'name=stress state=removed'
+   28  ansible test_servers -m uri -a 'url=https://opennet.ru'
+   29  ansible test_servers -m uri
+   30  ansible test_servers -m service -a 'name=httpd state=started enabled=yes' -b
+   31  ansible test_servers -m service -a 'name=httpd state=started enabled=yes' -vvv
+   32  ansible-doc -l
+   33  ansible-doc -l | grep win_
+   34  ansible-doc -l | grep ec2
