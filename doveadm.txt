@@ -1,0 +1,2 @@
+doveadm pw -s ssha512 -p test
+Создание пароля для imap.passwd

@@ -1,0 +1,4 @@
+dos2unix/oldstable 
+  convert text file line endings between CRLF and LF
+
+unix2dos

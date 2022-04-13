@@ -1,0 +1,58 @@
+Для входящих сообщений
+
+Открываем конфигурационный файл:
+
+vi /etc/postfix/main.cf
+
+Добавляем следующее:
+
+recipient_bcc_maps = hash:/etc/postfix/recipient_bcc_map
+
+* при данной настройке все входящие сообщения будут копироваться по правилам в файле /etc/postfix/recipient_bcc_map.
+
+Теперь открываем данный файл и вносим, примерно, следующее:
+
+vi /etc/postfix/recipient_bcc_map
+
+user1@domain.ru backup1@domain.ru
+@domain2.ru backup2@domain.ru
+
+
+______________________________________________________________________________________________________
+
+
+Для исходящих сообщений
+
+Открываем конфигурационный файл:
+
+vi /etc/postfix/main.cf
+
+Добавляем следующее:
+
+sender_bcc_maps = hash:/etc/postfix/sender_bcc_map
+
+* при данной настройке все исходящие сообщения будут копироваться по правилам в файле /etc/postfix/sender_bcc_map;
+
+Теперь открываем данный файл и вносим, примерно, следующее:
+
+vi /etc/postfix/sender_bcc_map
+
+user1@domain.ru backup1@domain.ru
+@domain2.ru backup2@domain.ru
+
+* в данном примере все сообщения от пользователя user1@domain.ru будут копироваться на почтовый ящик backup1@domain.ru; все письма от домена @domain2.ru будут копироваться на backup2@domain.ru.
+
+Создаем карту:
+
+postmap /etc/postfix/sender_bcc_map
+
+И перезапускаем почтовый сервер:
+
+systemctl restart postfix
+
+______________________________________________________________________________________________________
+
+smtp_generic_maps = hash:/etc/postfix/domain_rewrite
+
+root@addr.ru root@addr2.ru
+@web_01.addr.ru @addr.ru
