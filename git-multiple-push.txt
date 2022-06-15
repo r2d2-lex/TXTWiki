@@ -1,0 +1,10 @@
+git remote rm backup
+git remote rm origin
+git remote add all git@github.com:r2d2-lex/smbstatus.git
+git remote set-url --add --push all git@github.com:r2d2-lex/smbstatus.git
+git remote set-url --add --push all http://localhost:3000/xardas/smbstat.git
+git push all
+
+git push --set-upstream all master
+git push --set-upstream all master
+
