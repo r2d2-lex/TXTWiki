@@ -1,0 +1,11 @@
+set mouse-=a
+syntax on
+set tabstop=4
+set shiftwidth=4
+set smarttab
+set expandtab "Ставим табы пробелами
+set softtabstop=4 "4 пробела в табе
+"Автоотступ
+set autoindent
+"Подсвечиваем все что можно подсвечивать
+let python_highlight_all = 1
