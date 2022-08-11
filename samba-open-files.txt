@@ -1,0 +1,9 @@
+net file USER UserAd -U UserAd -S smbserver
+net rpc file  -U UserAd -S smbserver
+
+net rpc file close
+
+
+net file close 10530275 -U UserAd -S smbserver
+
+Openfiles /Query /S smbserver | more
