@@ -1,0 +1,27 @@
+
+psql -U postgres
+
+CREATE USER user1 WITH PASSWORD 'myPassword';
+
+GRANT ALL PRIVILEGES ON DATABASE "database1" to user1;
+
+# Просмотр всех баз данных
+\l
+
+# Просмотр всех таблиц
+\dt
+
+# Подключение к БД
+\c
+
+
+__________
+
+Добавляем права на чтение пользователю в postgres. ОШИБКА: нет доступа к отношению
+
+CREATE ROLE newuser2 WITH LOGIN ENCRYPTED PASSWORD ‘newpass’;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT SELECT ON TABLES TO newuser2;
+GRANT USAGE ON SCHEMA public to newuser2;
+GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO newuser2;
+GRANT SELECT ON ALL TABLES IN SCHEMA public TO newuser2;
+ALTER ROLE newuser2 WITH Superuser;
