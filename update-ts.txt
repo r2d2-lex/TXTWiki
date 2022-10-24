@@ -1,0 +1,3 @@
+find /your/dir -type f -exec touch {} +
+
+will update the timestamp on all files in the directory.
