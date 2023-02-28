@@ -1,0 +1,29 @@
+
+# OPENVPN server config:
+
+local 127.0.0.1
+port 1194
+proto tcp
+dev tun
+ca ca.crt
+cert server.crt
+key server.key
+dh dh.pem
+server 10.10.10.0 255.255.255.0
+ifconfig-pool-persist ipp.txt
+keepalive 10 120
+;comp-lzo
+persist-key
+persist-tun
+log /var/log/openvpn.log
+verb 3
+status openvpn-status.log
+client-to-client
+push "redirect-gateway def1"
+script-security 2
+dhcp-option DNS 192.168.3.76
+;push "route 192.168.2.0 255.255.255.0"
+;client-config-dir ccd
+user nobody
+group nogroup
+
