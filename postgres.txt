@@ -14,7 +14,7 @@ GRANT ALL PRIVILEGES ON DATABASE "database1" to user1;
 # Подключение к БД
 \c
 
-
+psql -h host.com -d db username
 __________
 
 Добавляем права на чтение пользователю в postgres. ОШИБКА: нет доступа к отношению
@@ -25,3 +25,4 @@ GRANT USAGE ON SCHEMA public to newuser2;
 GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO newuser2;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO newuser2;
 ALTER ROLE newuser2 WITH Superuser;
+__________
