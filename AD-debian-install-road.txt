@@ -1,0 +1,479 @@
+   18  apt install openssh-server
+   21  apt install sudo
+   25  apt install samba
+   31  apt install vim
+   38  apt install net-tools
+   40  apt install wget
+   61  apt install ntp
+
+   
+apt install krb5-user krb5-config winbind libpam-winbind libnss-winbind
+
+apt-get install man-db
+ln -s /usr/share/zoneinfo/Asia/Yekaterinburg /etc/localtime
+dpkg-reconfigure locales
+
+apt-get install acl attr samba samba-dsdb-modules samba-vfs-modules winbind krb5-config krb5-user dnsutils ldb-tools apparmor-utils
+_______________________________________________________________________________________________________________________________
+cd /etc/
+cp krb5.conf krb5.conf.orig
+
+ dns_lookup_kdc = true
+ dns_lookup_realm = true
+ default_realm = TEST.LOCAL
+ 
+ 
+ /etc/network/interfaces:
+ # The primary network interface
+allow-hotplug enp1s0
+iface enp1s0 inet static
+address 192.168.0.46
+gateway 192.168.3.71
+netmask 255.255.252.0
+dns-nameservers 192.168.3.76
+dns-search company.org
+
+/etc/hosts
+#127.0.1.1  linuxdc.company.org    linuxdc
+192.168.0.46    linuxdc.company.org    linuxdc
+
+root@linuxdc:~# cat /etc/resolv.conf 
+domain company.org
+search company.org
+nameserver 192.168.0.4
+nameserver 192.168.0.3
+_______________________________________________________________________________________________________________________________
+Очистка кэша dns на linux клиенте:
+systemctl restart systemd-resolved.service
+
+systemctl stop samba-ad-dc smbd nmbd winbind
+_______________________________________________________________________________________________________________________________
+
+cp /etc/samba/smb.conf /etc/samba/smb.conf.orig
+rm /etc/samba/smb.conf
+_______________________________________________________________________________________________________________________________
+
+root@linuxdc:~# cat /var/lib/samba/private/krb5.conf
+[libdefaults]
+        default_realm = COMPANY.ORG
+        dns_lookup_realm = false
+        dns_lookup_kdc = true
+
+[realms]
+COMPANY.ORG = {
+        default_domain = company.org
+}
+
+[domain_realm]
+        LINUXDC = COMPANY.ORG
+
+_______________________________________________________________________________________________________________________________
+???
+samba-tool dns zonecreate 192.168.1.9 1.168.192.in-addr.arpa -Uadministrator
+_______________________________________________________________________________________________________________________________
+
+DC2 - удалил роли центра сертификации, iis, etc...
+С помощью dcpromo понижаем роль домена, перезагружаемся, удаляем роль AD сервера.
+_______________________________________________________________________________________________________________________________
+
+kinit SuperUser@COMPANY.ORG
+klist
+systemctl restart samba-ad-dc
+systemctl status samba-ad-dc
+_______________________________________________________________________________________________________________________________
+root@linuxdc:/var/lib/samba/private# host company.org
+company.org has address 192.168.0.46
+company.org has address 192.168.0.3
+company.org has address 192.168.0.4
+company.org has address 192.168.170.3
+company.org mail is handled by 10 mx1.company.org.
+root@linuxdc:/var/lib/samba/private# host -t SRV _kerberos._udp.company.org
+_kerberos._udp.company.org has SRV record 0 100 88 dc.company.org.
+_kerberos._udp.company.org has SRV record 0 100 88 DC2.company.org.
+_kerberos._udp.company.org has SRV record 0 100 88 linuxdc.company.org.
+root@linuxdc:/var/lib/samba/private# host -t SRV _ldap._tcp.company.org
+_ldap._tcp.company.org has SRV record 0 100 389 dc.company.org.
+_ldap._tcp.company.org has SRV record 0 100 389 DC2.company.org.
+_ldap._tcp.company.org has SRV record 0 100 389 linuxdc.company.org.
+_______________________________________________________________________________________________________________________________
+
+root@linuxdc:/var/lib/samba/private# find / -name "sam.ldb"
+find: ‘/proc/1037’: Нет такого файла или каталога
+/var/lib/samba/private/sam.ldb
+_______________________________________________________________________________________________________________________________
+
+apt-get install -y bind9 bind9utils
+named -v
+BIND 9.16.27-Debian (Extended Support Version) <id:96094c5>
+
+named -V | grep sysco
+built by make with '--build=x86_64-linux-gnu' '--prefix=/usr' '--includedir=/usr/include' '--mandir=/usr/share/man' '--infodir=/usr/share/info' '--sysconfdir=/etc' '--localstatedir=/var' '--disable-option-checking' '--disable-silent-rules' '--libdir=/usr/lib/x86_64-linux-gnu' '--runstatedir=/run' '--disable-maintainer-mode' '--disable-dependency-tracking' '--libdir=/usr/lib/x86_64-linux-gnu' '--sysconfdir=/etc/bind' '--with-python=python3' '--localstatedir=/' '--enable-threads' '--enable-largefile' '--with-libtool' '--enable-shared' '--enable-static' '--with-gost=no' '--with-openssl=/usr' '--with-gssapi=/usr' '--with-libidn2' '--with-json-c' '--with-lmdb=/usr' '--with-gnu-ld' '--with-maxminddb' '--with-atf=no' '--enable-ipv6' '--enable-rrl' '--enable-filter-aaaa' '--disable-native-pkcs11' '--enable-dnstap' 'build_alias=x86_64-linux-gnu' 'CFLAGS=-g -O2 -ffile-prefix-map=/build/bind9-wQCDJA/bind9-9.16.27=. -fstack-protector-strong -Wformat -Werror=format-security -fno-strict-aliasing -fno-delete-null-pointer-checks -DNO_VERSION_DATE -DDIG_SIGCHASE' 'LDFLAGS=-Wl,-z,relro -Wl,-z,now' 'CPPFLAGS=-Wdate-time -D_FORTIFY_SOURCE=2'
+
+cat /etc/passwd | grep bind
+_______________________________________________________________________________________________________________________________
+acl internals { 127.0.0.0/8; 192.168.0.0/22; };
+
+options {
+    directory "/var/cache/bind";
+    version "Version 9999";
+    notify no;
+    empty-zones-enable no;
+    auth-nxdomain yes;
+    forwarders { 8.8.8.8; 8.8.4.4; };
+    allow-transfer { none; };
+
+    minimal-responses yes;
+    allow-query { "internals";  };
+    allow-query-cache { "internals"; };
+
+    recursion yes;
+    allow-recursion {  "internals"; };
+
+    listen-on-v6 { none; };
+    listen-on port 53 { 192.168.0.46; 127.0.0.1; };
+
+    // dnssec-validation auto;
+    dnssec-validation no;
+    //dnssec-enable no;
+    //dnssec-lookaside no;
+
+    tkey-gssapi-keytab "/var/lib/samba/private/dns.keytab";
+};
+
+In smb.conf
+allow dns updates = nonsecure
+
+_______________________________________________________________________________________________________________________________
+
+!!!!! Перед demote надо запустить samba иначе не получится - systemctl start samba-ad-dc !!!!!
+samba-tool domain demote -U"COMPANY_ORG\SuperUser"
+samba-tool domain join COMPANY.ORG DC -U"COMPANY_ORG\SuperUser" --dns-backend=NONE --option='idmap_ldb:use rfc2307 = yes' --option="interfaces=lo enp1s0" --option="bind interfaces only=yes"
+или это
+samba-tool domain join COMPANY.ORG DC -U"COMPANY_ORG\SuperUser" --dns-backend=NONE --option="interfaces=lo enp1s0" --option="bind interfaces only=yes"
+samba-tool domain join COMPANY.ORG DC -U"COMPANY_ORG\SuperUser" --dns-backend=NONE --option="interfaces=lo enp1s0" --option="bind interfaces only=yes"
+
+?????????????????????????????????????????????????????????????????????
+For UNIX attribute in RSAT(--option='idmap_ldb:use rfc2307 = yes' ?????):
+samba-tool domain join COMPANY.ORG DC -U"COMPANY_ORG\SuperUser" --dns-backend=NONE --option="interfaces=lo enp1s0" --option="bind interfaces only=yes" --option='idmap_ldb:use rfc2307 = yes'
+
+
+samba-tool drs replicate LINUXDC DC DC=ForestDnsZones,dc=company,dc=org --local --full-sync
+samba-tool drs replicate LINUXDC DC DC=DomainDnsZones,dc=company,dc=org --local --full-sync
+
+
+root@linuxdc:/etc/samba# samba-tool drs replicate LINUXDC DC DC=ForestDnsZones,dc=company,dc=org --local --full-sync
+Partition[DC=ForestDnsZones,dc=company,dc=org] objects[274] linked_values[0]
+Repacking database from v1 to v2 format (first record DC=35\0ADEL:ce1620ef-b2cf-49eb-a91c-a931eae39983,CN=Deleted Objects,DC=ForestDnsZones,DC=company,DC=org)
+Full Replication of all 274 objects and 0 links from DC to tdb:///var/lib/samba/private/sam.ldb was successful.
+root@linuxdc:/etc/samba# samba-tool drs replicate LINUXDC DC DC=DomainDnsZones,dc=company,dc=org --local --full-sync
+Partition[DC=DomainDnsZones,dc=company,dc=org] objects[374] linked_values[0]
+Repacking database from v1 to v2 format (first record DC=LINUXDC\0ADEL:95725a62-8f73-4b60-a52e-c5cd7809c511,CN=Deleted Objects,DC=DomainDnsZones,DC=company,DC=org)
+Full Replication of all 374 objects and 0 links from DC to tdb:///var/lib/samba/private/sam.ldb was successful.
+
+_______________________________________________________________________________________________________________________________
+Если переводим в домен samba то:
+samba-tool user delete dns-linuxdc
+_______________________________________________________________________________________________________________________________
+
+root@linuxdc:/etc/samba# samba_upgradedns --dns-backend=BIND9_DLZ
+Reading domain information
+DNS accounts already exist
+No zone file /var/lib/samba/bind-dns/dns/COMPANY.ORG.zone
+/usr/sbin/samba_upgradedns:338: DeprecationWarning: The 'warn' method is deprecated, use 'warning' instead
+  logger.warn("DNS records will be automatically created")
+DNS records will be automatically created
+DNS partitions already exist
+Adding dns-linuxdc account
+check_spn_alias_collision: trying to add SPN 'DNS/linuxdc.company.org' on 'CN=dns-linuxdc,CN=Users,DC=company,DC=org' when 'host/linuxdc.company.org' is on 'CN=LINUXDC,OU=Domain Controllers,DC=company,DC=org'
+See /var/lib/samba/bind-dns/named.conf for an example configuration include file for BIND
+and /var/lib/samba/bind-dns/named.txt for further documentation required for secure DNS updates
+Finished upgrading DNS
+
+_______________________________________________________________________________________________________________________________
+  301  samba-tool dbcheck --cross-ncs
+  302  samba-tool dbcheck --cross-ncs --fix
+_______________________________________________________________________________________________________________________________
+
+Изменить в Диспетчер DNS -> Зоны прямого просмотра -> company.org (ПКМ-Свойства) > Серверы имён
+Изменить в DHCP -> dc.company.org -> IPv4 -> Область COMPANY_ORG -> Параметры сервера и Параметры области -> Настроить параметры 006 DNS-серверы
+
+_______________________________________________________________________________________________________________________________
+samba-tool dns add DC COMPANY.ORG LINUXDC A 192.168.0.46 -U"COMPANY_ORG\SuperUser"
+host -t A linuxdc.company.org
+linuxdc.company.org has address 192.168.0.46
+_______________________________________________________________________________________________________________________________
+find /var -name "named.conf"
+/var/lib/samba/bind-dns/named.conf
+
+chown root:bind /etc/krb5.conf
+chmod 755 /var/lib/samba/private
+chmod 640 /var/lib/samba/private/dns.keytab
+_______________________________________________________________________________________________________________________________
+samba_dnsupdate --verbose
+_______________________________________________________________________________________________________________________________
+
+apt install rsync
+rsync --version | grep -E 'ACLs|xattrs'
+_______________________________________________________________________________________________________________________________
+ SECPOL.MSC | Security Settings | Local Policies | Security Options
+Network access: Do not allow storage of passwords and credentials for network authentication 
+
+В каком состоянии политика Computer Configuration/Windows Settings/Security Settings/Local 
+Policies/Security Options/Network access: Do not allow storage of passwords and credentials for network authentication?
+Сетевой доступ: не разрешать хранение паролей или учетных данных для сетевой проверки подлинности
+
+C:\windows\system32\robocopy.exe
+C:\Windows\SYSVOL\domain\ \\linuxdc\sysvol\company.org /mir /sec
+_______________________________________________________________________________________________________________________________
+apt install smbclient
+smbclient -L localhost -N
+dpkg --list | grep samba
+smbclient //localhost/netlogon -UAdministrator -c 'ls'
+smbclient //localhost/netlogon -U"COMPANY_ORG\SuperUser" -c 'ls'
+host -t SRV _ldap._tcp.company.org
+host -t SRV _kerberos._udp.company.org
+host -t A linuxdc.company.org
+_______________________________________________________________________________________________________________________________
+
+Список пользователей:
+wbinfo -u
+групп:
+wbinfo -g
+
+net rpc rights grant "COMPANY_ORG\domain_admins" SeDiskOperatorPrivilege -U"COMPANY_ORG\SuperUser"
+net rpc rights list privileges SeDiskOperatorPrivilege -U"COMPANY_ORG\SuperUser"
+_______________________________________________________________________________________________________________________________
+ЭТО ПОКА НЕ НУЖНО:
+добавил в /etc/samba/smb.conf:
+[global]
+    vfs objects = acl_xattr
+    map acl inherit = yes
+    store dos attributes = yes
+
+Затем установил vfs objects = dfs_samba4 acl_xattr recycle
+_______________________________________________________________________________________________________________________________
+
+apt-get install isc-dhcp-server
+samba-tool user create dhcpduser --description="Unprivileged user for TSIG-GSSAPI DNS updates via ISC DHCP server" --random-password
+samba-tool user setexpiry dhcpduser --noexpiry
+samba-tool group addmembers DnsAdmins dhcpduser
+
+samba-tool domain exportkeytab --principal=dhcpduser@COMPANY.RU /etc/dhcpduser.keytab
+
+chown root:root  /etc/dhcpduser.keytab
+chmod 400  /etc/dhcpduser.keytab
+
+Установил Add_macAddress='no' с параметром Add_macAddress='yes' может быть ошибка
+
+_______________________________________________________________________________________________________________________________
+
+DHCPD Log : reuse_lease: lease age under 25% threshold, reply with unaltered, existing lease
+
+Для решения dhcp-cache-threshold 0 в dhcpd.conf; Просто добавьте его и перезапустите службу.
+_______________________________________________________________________________________________________________________________
+
+samba-gpupdate --force
+add_local_groups: SID S-1-5-21-1827513285-793410680-2687749443-49736 -> getpwuid(3000054) failed, is nsswitch configured?
+wbinfo --ping-dc
+root@linuxdc:/etc# getent passwd "COMPANY_ORG\\SuperUser"
+COMPANY_ORG\superuser:*:3000007:100:Sup sup sup:/home/COMPANY_ORG/superuser:/bin/false
+root@linuxdc:/etc# getent group "COMPANY_ORG\\domain_admins"
+COMPANY_ORG\domain_admins:x:3000026:
+root@linuxdc:/etc# getent group "COMPANY_ORG\\domain_users"
+COMPANY_ORG\domain_users:x:100:
+
+/etc/nsswitch.conf
+passwd:         files winbind systemd
+group:          files winbind systemd
+
+chown "COMPANY_ORG\\SuperUser":"COMPANY_ORG\\domain_users" /exchange/
+smbcontrol all reload-config
+
+_______________________________________________________________________________________________________________________________
+domain company.org
+search company.org
+nameserver 127.0.0.1
+nameserver 192.168.0.4
+_______________________________________________________________________________________________________________________________
+ERROR:
+1:
+/usr/sbin/samba-gpupdate: RuntimeError: Failed to get machine token for 'LINUXDC$'(CN=LINUXDC,OU=Domain Controllers,DC=company,DC=org): The specified account does not exist.
+
+2:
+UpdateRefs failed with WERR_DS_DRA_BUSY/NT
+solution:
+
+on win dc:
+repadmin /kcc
+
+on samba dc:
+samba-tool drs kcc -U"COMPANY_ORG\SuperUser" dc.company.org
+
+3:
+May 26 15:53:36 linuxdc samba[498]: [2022/05/26 15:53:36.116652,  0] ../../source4/dsdb/repl/drepl_out_helpers.c:1308(dreplsrv_update_refs_done)
+May 26 15:53:36 linuxdc samba[498]:   UpdateRefs failed with WERR_DS_DRA_BUSY/NT code 0xc00020f6 for 6ffb2dce-3ee0-434d-8495-10e6a81c82ca._msdcs.company.org DC=company,DC=org
+May 26 15:54:26 linuxdc named[375]: client @0x7f200c8c0f60 192.168.0.4#60801: received notify for zone 'company.org': not authoritative
+May 26 15:54:26 linuxdc named[375]: client @0x7f200c8c0f60 192.168.0.4#60525: received notify for zone 'company.org': not authoritative
+
+4:
+May 27 09:04:26 linuxdc winbindd[470]: [2022/05/27 09:04:26.747579,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+May 27 09:04:26 linuxdc winbindd[470]:   /usr/sbin/samba-gpupdate: Traceback (most recent call last):
+May 27 09:04:26 linuxdc winbindd[470]: [2022/05/27 09:04:26.747699,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+May 27 09:04:26 linuxdc winbindd[470]:   /usr/sbin/samba-gpupdate:   File "/usr/sbin/samba-gpupdate", line 92, in <module>
+May 27 09:04:26 linuxdc winbindd[470]: [2022/05/27 09:04:26.750022,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+May 27 09:04:26 linuxdc winbindd[470]:   /usr/sbin/samba-gpupdate:     apply_gp(lp, creds, logger, store, gp_extensions, opts.force)
+May 27 09:04:26 linuxdc winbindd[470]: [2022/05/27 09:04:26.750105,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+May 27 09:04:26 linuxdc winbindd[470]:   /usr/sbin/samba-gpupdate:   File "/usr/lib/python3/dist-packages/samba/gpclass.py", line 448, in apply_gp
+May 27 09:04:26 linuxdc winbindd[470]: [2022/05/27 09:04:26.750169,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+May 27 09:04:26 linuxdc winbindd[470]:   /usr/sbin/samba-gpupdate:     gpos = get_gpo_list(dc_hostname, creds, lp)
+May 27 09:04:26 linuxdc winbindd[470]: [2022/05/27 09:04:26.750216,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+May 27 09:04:26 linuxdc winbindd[470]:   /usr/sbin/samba-gpupdate:   File "/usr/lib/python3/dist-packages/samba/gpclass.py", line 387, in get_gpo_list
+May 27 09:04:26 linuxdc winbindd[470]: [2022/05/27 09:04:26.750263,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+May 27 09:04:26 linuxdc winbindd[470]:   /usr/sbin/samba-gpupdate:     gpos = ads.get_gpo_list(creds.get_username())
+May 27 09:04:26 linuxdc winbindd[470]: [2022/05/27 09:04:26.750310,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+May 27 09:04:26 linuxdc winbindd[470]:   /usr/sbin/samba-gpupdate: RuntimeError: Failed to get machine token for 'LINUXDC$'(CN=LINUXDC,OU=Domain Controllers,DC=company,DC=org): The specified account does not exist.
+
+
+5:
+May 27 10:46:43 linuxdc smbd[1425]: [2022/05/27 10:46:43.683316,  0] ../../source3/param/loadparm.c:3428(process_usershare_file)
+May 27 10:46:43 linuxdc smbd[1425]:   process_usershare_file: stat of /var/lib/samba/usershares/sysvo failed. Отказано в доступе
+
+6:
+/samba-gpupdate: RuntimeError: ads_connect() failed: Operations error
+
+ID mapping back ends are not supported in the smb.conf file on a Samba Active Directory (AD) domain controller (DC).
+For details, see Failure To Access Shares on Domain Controllers If idmap config Parameters Set in the smb.conf File.
+
+7:
+/usr/sbin/samba-gpupdate: add_local_groups: SID S-1-5-21-1827513285-793410680-2687749443-49739 -> getpwuid(3000015) failed, is nsswitch configured?
+root@linuxdc:~# wbinfo -s S-1-5-21-1827513285-793410680-2687749443-49739
+COMPANY_ORG\LINUXDC$ 1
+
+8:
+????
+root: DHCP-DNS add failed: 0:255:0:255
+root: DHCP-DNS add failed: 0:255:0:255
+root: DHCP-DNS add failed: 0:255:0:255
+
+9:
+Correct 'PTR' record exists, not updating.
+июн 03 14:40:24 linuxdc root[1825]: Error modifying Computer objectclass N31337 in AD.
+июн 03 14:40:24 linuxdc dhcpd[459]: execute: /usr/local/bin/dhcp-dyndns.sh exit status 12800
+
+ldbsearch -k yes -H ldap://linuxdc "(&(objectclass=computer)(cn=N31337))"
+_______________________________________________________________________________________________________________________________
+
+Winbind
+To enable Group Policy application in winbind, set the global option apply group policies to yes. 
+smb.conf
+apply group policies = yes 
+
+samba-tool gpo admxload -U"COMPANY_ORG\SuperUser" --admx-dir=/var/lib/samba/sysvol/company.org/policies/PolicyDefinitions/
+
+samba-gpupdate --force
+samba-tool gpo listall
+_______________________________________________________________________________________________________________________________
+
+!!! Настройка syncthing !!!
+_______________________________________________________________________________________________________________________________
+chown -R root:"COMPANY_ORG\\domain_admins" sysvol
+chmod -R 777 /var/lib/samba/sysvol
+chmod -R 777 /var/lib/samba/sysvol
+Даём полные права затем настраиваем через оснастку виндовс остальные права
+Заменяем права на вложанные подпапки
+
+samba-tool gpo listall
+samba-tool gpo listall
+samba-tool gpo listall
+
+#!/bin/sh
+mount.cifs //dc.company.org/sysvol/ /SYSVOL -o user,uid=root,gid=root,rw,credentials=/root/.cifs
+_______________________________________________________________________________________________________________________________
+cd /dev/mappper
+[root@node_85 mapper]# dmsetup remove linuxdc-part2
+[root@node_85 mapper]# dmsetup remove linuxdc-part1
+[root@node_85 mapper]# dmsetup remove linuxdc 
+
+_______________________________________________________________________________________________________________________________
+
+Передача ролей FSMO:
+
+root@linuxdc:~# samba-tool fsmo show
+SchemaMasterRole owner: CN=NTDS Settings,CN=DC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+InfrastructureMasterRole owner: CN=NTDS Settings,CN=DC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+RidAllocationMasterRole owner: CN=NTDS Settings,CN=DC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+PdcEmulationMasterRole owner: CN=NTDS Settings,CN=DC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+DomainNamingMasterRole owner: CN=NTDS Settings,CN=DC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+DomainDnsZonesMasterRole owner: CN=NTDS Settings,CN=DC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+ForestDnsZonesMasterRole owner: CN=NTDS Settings,CN=DC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+
+WIDOWS PDC:
+# ntdsutil
+roles
+connections
+connect to server linuxdc
+q
+
+transfer naming master
+transfer infrastructure master
+transfer rid master
+transfer schema master
+transfer pdc
+
+
+
+root@linuxdc:~# samba-tool fsmo show
+SchemaMasterRole owner: CN=NTDS Settings,CN=LINUXDC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+InfrastructureMasterRole owner: CN=NTDS Settings,CN=LINUXDC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+RidAllocationMasterRole owner: CN=NTDS Settings,CN=LINUXDC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+PdcEmulationMasterRole owner: CN=NTDS Settings,CN=LINUXDC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+DomainNamingMasterRole owner: CN=NTDS Settings,CN=LINUXDC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+DomainDnsZonesMasterRole owner: CN=NTDS Settings,CN=DC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+ForestDnsZonesMasterRole owner: CN=NTDS Settings,CN=DC,CN=Servers,CN=Default-First-Site-Name,CN=Sites,CN=Configuration,DC=company,DC=org
+
+# samba-tool fsmo seize --role=forestdns
+# samba-tool fsmo seize --role=domaindns
+
+_______________________________________________________________________________________________________________________________
+
+Удалил серверы условной перессылки.
+
+Jul 20 15:04:23 linuxdc named[396]: client @0x7f15c8bc5920 192.168.0.4#58362: received notify for zone 'company.org': not authoritative
+Jul 20 15:04:23 linuxdc named[396]: client @0x7f15c00265c0 192.168.0.4#59014: received notify for zone '0.168.192.in-addr.arpa': not authoritative
+Jul 20 15:05:18 linuxdc named[396]: client @0x7f15c8bc5920 192.168.0.4#58636: received notify for zone '0.168.192.in-addr.arpa': not authoritative
+Jul 20 15:05:18 linuxdc named[396]: client @0x7f15c8bc5920 192.168.0.4#57674: received notify for zone 'company.org': not authoritative
+
+
+Jul 20 15:19:12 linuxdc smbd[729]: [2022/07/20 15:19:12.941209,  0] ../../source3/rpc_server/rpc_server.c:1086(dcesrv_auth_gensec_prepare)
+Jul 20 15:19:12 linuxdc smbd[729]:   dcesrv_auth_gensec_prepare: Failed to prepare gensec: NT_STATUS_INVALID_SERVER_STATE
+Jul 20 15:19:45 linuxdc smbd[734]: [2022/07/20 15:19:45.614635,  0] ../../source3/rpc_server/rpc_server.c:1086(dcesrv_auth_gensec_prepare)
+Jul 20 15:19:45 linuxdc smbd[734]:   dcesrv_auth_gensec_prepare: Failed to prepare gensec: NT_STATUS_INVALID_SERVER_STATE
+
+
+_______________________________________________________________________________________________________________________________
+
+Jul 20 16:17:01 linuxdc CRON[948]: (root) CMD (   cd / && run-parts --report /etc/cron.hourly)
+Jul 20 16:34:45 linuxdc winbindd[496]: [2022/07/20 16:34:45.859893,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+Jul 20 16:34:45 linuxdc winbindd[496]:   /usr/sbin/samba-gpupdate: add_local_groups: SID S-1-5-21-1827513285-793410680-2687749443-49742 -> getpwuid(3000049) failed, is nsswitch configured?
+Jul 20 16:34:45 linuxdc winbindd[496]: [2022/07/20 16:34:45.861404,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+Jul 20 16:34:45 linuxdc winbindd[496]:   /usr/sbin/samba-gpupdate: Traceback (most recent call last):
+Jul 20 16:34:45 linuxdc winbindd[496]: [2022/07/20 16:34:45.861554,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+Jul 20 16:34:45 linuxdc winbindd[496]:   /usr/sbin/samba-gpupdate:   File "/usr/sbin/samba-gpupdate", line 92, in <module>
+Jul 20 16:34:45 linuxdc winbindd[496]: [2022/07/20 16:34:45.861662,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+Jul 20 16:34:45 linuxdc winbindd[496]:   /usr/sbin/samba-gpupdate:     apply_gp(lp, creds, logger, store, gp_extensions, opts.force)
+Jul 20 16:34:45 linuxdc winbindd[496]: [2022/07/20 16:34:45.861723,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+Jul 20 16:34:45 linuxdc winbindd[496]:   /usr/sbin/samba-gpupdate:   File "/usr/lib/python3/dist-packages/samba/gpclass.py", line 448, in apply_gp
+Jul 20 16:34:45 linuxdc winbindd[496]: [2022/07/20 16:34:45.861776,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+Jul 20 16:34:45 linuxdc winbindd[496]:   /usr/sbin/samba-gpupdate:     gpos = get_gpo_list(dc_hostname, creds, lp)
+Jul 20 16:34:45 linuxdc winbindd[496]: [2022/07/20 16:34:45.861816,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+Jul 20 16:34:45 linuxdc winbindd[496]:   /usr/sbin/samba-gpupdate:   File "/usr/lib/python3/dist-packages/samba/gpclass.py", line 387, in get_gpo_list
+Jul 20 16:34:45 linuxdc winbindd[496]: [2022/07/20 16:34:45.861856,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+Jul 20 16:34:45 linuxdc winbindd[496]:   /usr/sbin/samba-gpupdate:     gpos = ads.get_gpo_list(creds.get_username())
+Jul 20 16:34:45 linuxdc winbindd[496]: [2022/07/20 16:34:45.861896,  0] ../../lib/util/util_runcmd.c:352(samba_runcmd_io_handler)
+Jul 20 16:34:45 linuxdc winbindd[496]:   /usr/sbin/samba-gpupdate: RuntimeError: Failed to get machine token for 'LINUXDC$'(CN=LINUXDC,OU=Domain Controllers,DC=company,DC=org): The specified account does not exist.
+Jul 20 16:44:29 linuxdc dhcpd[439]: DHCPINFORM from 192.168.1.11 via enp1s0
+Jul 20 16:44:29 linuxdc dhcpd[439]: DHCPACK to 192.168.1.11 (52:54:00:61:fd:42) via enp1s0
+_______________________________________________________________________________________________________________________________
+_______________________________________________________________________________________________________________________________
+
+
