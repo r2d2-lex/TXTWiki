@@ -15,6 +15,9 @@ GRANT ALL PRIVILEGES ON DATABASE "database1" to user1;
 \c
 
 psql -h host.com -d db username
+
+PostgreSQL "DESCRIBE TABLE":
+\d+ host;
 __________
 
 Добавляем права на чтение пользователю в postgres. ОШИБКА: нет доступа к отношению

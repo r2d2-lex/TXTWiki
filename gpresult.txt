@@ -1,0 +1,1 @@
+gpresult /R /S hostname /scope user /U DOMEN.RU\UserFO /P /H rep.html
