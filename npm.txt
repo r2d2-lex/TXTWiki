@@ -1,2 +1,5 @@
 Start React server on port 8000:
 PORT=8000 npm run start
+
+Install axios:
+npm i axios
