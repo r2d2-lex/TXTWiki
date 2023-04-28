@@ -1,5 +1,20 @@
+npm install -g create-react-app
+create-react-app my-app
+cd my-app
+npm start
+
+или
+
+npx create-react-app my-app
+cd my-app
+npm start
+________________________________
+
+
 Start React server on port 8000:
 PORT=8000 npm run start
 
 Install axios:
 npm i axios
+
+npm install -g typescript
