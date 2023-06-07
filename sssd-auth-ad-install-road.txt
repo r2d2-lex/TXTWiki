@@ -1,0 +1,177 @@
+root@linuxtv:~# apt install sssd-ad sssd-tools realmd adcli
+apt install realmd samba-common-bin samba-libs sssd-tools krb5-user adcli
+
+_________________________________________________________________________________________________________
+apt install krb5-user krb5-config
+   
+_________________________________________________________________________________________________________
+vim /etc/krb5.conf 
+   add to defaults: rdns = false
+
+   
+ /etc/krb5.conf 
+ [libdefaults]
+    default_realm = DOMEN.RU
+    rdns = false
+
+# The following krb5.conf variables are only for MIT Kerberos.
+    kdc_timesync = 1
+    ccache_type = 4
+    forwardable = true
+    proxiable = true
+
+
+[realms]
+DOMEN.RU = {
+        default_domain = domen.ru
+}
+
+[domain_realm]
+        .domen.ru = DOMEN.RU
+        domen.ru = DOMEN.RU
+
+
+_________________________________________________________________________________________________________
+
+root@linuxtv:~# realm discover domen.ru
+domen.ru
+  type: kerberos
+  realm-name: DOMEN.RU
+  domain-name: domen.ru
+  configured: no
+  server-software: active-directory
+  client-software: sssd
+  required-package: sssd-tools
+  required-package: sssd
+  required-package: libnss-sss
+  required-package: libpam-sss
+  required-package: adcli
+  required-package: samba-common-bin
+root@linuxtv:~# realm --verbose join domen.ru -U superuser@DOMEN.RU --install=/           
+ * Resolving: _ldap._tcp.domen.ru
+ * Performing LDAP DSE lookup on: 192.168.0.3
+ * Successfully discovered: domen.ru
+Пароль для superuser@DOMEN.RU:
+ * Assuming packages are installed
+ * LANG=C /usr/sbin/adcli join --verbose --domain domen.ru --domain-realm DOMEN.RU --domain-controller 192.168.0.3 --login-type user --login-user superuser@DOMEN.RU --stdin-password
+ * Using domain name: domen.ru
+ * Calculated computer account name from fqdn: LINUXTV
+ * Using domain realm: domen.ru
+ * Sending NetLogon ping to domain controller: 192.168.0.3
+ * Received NetLogon info from: DC2.domen.ru
+ * Wrote out krb5.conf snippet to /var/cache/realmd/adcli-krb5-JuRAj5/krb5.d/adcli-krb5-conf-OV37c4
+ * Authenticated as user: superuser@DOMEN.RU
+ * Looked up short domain name: DOMEN_RU
+ * Looked up domain SID: S-1-5-21-1827513285-793410680-2687749443
+ * Using fully qualified name: linuxtv.domen.ru
+ * Using domain name: domen.ru
+ * Using computer account name: LINUXTV
+ * Using domain realm: domen.ru
+ * Calculated computer account name from fqdn: LINUXTV
+ * Generated 120 character computer password
+ * Using keytab: FILE:/etc/krb5.keytab
+ * Found computer account for LINUXTV$ at: CN=LINUXTV,CN=Computers,DC=domen,DC=ru
+ * Sending NetLogon ping to domain controller: 192.168.0.3
+ * Received NetLogon info from: DC2.domen.ru
+ * Set computer password
+ * Retrieved kvno '3' for computer account in directory: CN=LINUXTV,CN=Computers,DC=domen,DC=ru
+ * Checking RestrictedKrbHost/linuxtv.domen.ru
+ *    Added RestrictedKrbHost/linuxtv.domen.ru
+ * Checking RestrictedKrbHost/LINUXTV
+ *    Added RestrictedKrbHost/LINUXTV
+ * Checking host/linuxtv.domen.ru
+ *    Added host/linuxtv.domen.ru
+ * Checking host/LINUXTV
+ *    Added host/LINUXTV
+ * Discovered which keytab salt to use
+ * Added the entries to the keytab: LINUXTV$@DOMEN.RU: FILE:/etc/krb5.keytab
+ * Added the entries to the keytab: host/LINUXTV@DOMEN.RU: FILE:/etc/krb5.keytab
+ * Added the entries to the keytab: host/linuxtv.domen.ru@DOMEN.RU: FILE:/etc/krb5.keytab
+ * Added the entries to the keytab: RestrictedKrbHost/LINUXTV@DOMEN.RU: FILE:/etc/krb5.keytab
+ * Added the entries to the keytab: RestrictedKrbHost/linuxtv.domen.ru@DOMEN.RU: FILE:/etc/krb5.keytab
+ * /usr/sbin/update-rc.d sssd enable
+ * Successfully enrolled machine in realm
+root@linuxtv:~# pam-auth-update
+root@linuxtv:~# realm discover domen.ru
+domen.ru
+  type: kerberos
+  realm-name: DOMEN.RU
+  domain-name: domen.ru
+  configured: kerberos-member
+  server-software: active-directory
+  client-software: sssd
+  required-package: sssd-tools
+  required-package: sssd
+  required-package: libnss-sss
+  required-package: libpam-sss
+  required-package: adcli
+  required-package: samba-common-bin
+  login-formats: %U@domen.ru
+  login-policy: allow-realm-logins
+
+_________________________________________________________________________________________________________
+  
+     56  realm -v discover domen.ru
+   57  pam-auth-update --enable mkhomedir
+   58  getent passwd superuser@domen.ru
+   59  groups superuser@domen.ru
+_________________________________________________________________________________________________________
+root@linuxtv:~# kinit superuser@DOMEN.RU
+Password for superuser@DOMEN.RU: 
+root@linuxtv:~# klist
+Ticket cache: FILE:/tmp/krb5cc_0
+Default principal: superuser@DOMEN.RU
+
+Valid starting       Expires              Service principal
+06/07/2023 01:21:23  06/07/2023 11:21:23  krbtgt/DOMEN.RU@DOMEN.RU
+        renew until 06/07/2023 11:21:23
+root@linuxtv:~# kdestroy 
+root@linuxtv:~# klist
+klist: No credentials cache found (filename: /tmp/krb5cc_0)
+
+root@linuxtv:~# 
+root@linuxtv:~# sudo login
+linuxtv.domen.ru login: superuser@DOMEN.RU
+Password: 
+
+System error
+_________________________________________________________________________________________________________
+Jun  7 01:22:33 linuxtv sudo:     root : TTY=pts/0 ; PWD=/root ; USER=root ; COMMAND=/usr/bin/login
+Jun  7 01:22:33 linuxtv sudo: pam_unix(sudo:session): session opened for user root(uid=0) by rae(uid=0)
+Jun  7 01:22:45 linuxtv login[530]: pam_unix(login:auth): authentication failure; logname=rae uid=0 euid=0 tty=/dev/pts/0 ruser= rhost=  user=superuser@DOMEN.RU
+Jun  7 01:22:45 linuxtv login[530]: pam_sss(login:auth): authentication success; logname=rae uid=0 euid=0 tty=/dev/pts/0 ruser= rhost= user=superuser@DOMEN.RU
+Jun  7 01:22:45 linuxtv login[530]: pam_sss(login:account): Access denied for user superuser@DOMEN.RU: 4 (System error)
+Jun  7 01:22:45 linuxtv login[530]: System error
+Jun  7 01:22:45 linuxtv sudo: pam_unix(sudo:session): session closed for user root
+
+_________________________________________________________________________________________________________
+
+debug_level=7
+ad_gpo_ignore_unreadable = True
+ad_gpo_access_control = permissive
+
+_________________________________________________________________________________________________________
+/etc/sssd/sssd.conf
+[sssd]
+domains = domen.ru
+config_file_version = 2
+services = nss, pam
+
+[domain/domen.ru]
+default_shell = /bin/bash
+krb5_store_password_if_offline = True
+cache_credentials = True
+krb5_realm = DOMEN.RU
+realmd_tags = manages-system joined-with-adcli
+id_provider = ad
+fallback_homedir = /home/%u@%d
+ad_domain = domen.ru
+use_fully_qualified_names = True
+ldap_id_mapping = True
+access_provider = ad
+debug_level=7
+ad_gpo_ignore_unreadable = True
+ad_gpo_access_control = permissive
+
+_________________________________________________________________________________________________________
+_________________________________________________________________________________________________________
