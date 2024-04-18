@@ -30,12 +30,17 @@ smtp_tls_CApath=/etc/ssl/certs
 smtp_tls_security_level=may
 smtp_tls_session_cache_database = btree:${data_directory}/smtp_scache
 
-smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
+#If mydestination is empty or does not contain $myhostname then the /etc/aliases will be ignored because postfix 
+#thinks the email is not a local delivery and will therefore not apply the local aliases. So, leave mydestination 
+#at the default (postconf -d mydestination or remove it from main.cf) and the logs should show the to=<...> as your aliased address.
 myhostname = host.domen.ru
+mydomain = domen.ru
+#mydestination = mail.$mydomain
+
+smtpd_relay_restrictions = permit_mynetworks permit_sasl_authenticated defer_unauth_destination
 alias_maps = hash:/etc/aliases
 alias_database = hash:/etc/aliases
 myorigin = /etc/mailname
-mydestination = localhost
 relayhost =
 mynetworks = 127.0.0.0/8
 mailbox_size_limit = 0
