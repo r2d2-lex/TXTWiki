@@ -1,0 +1,5 @@
+Linux - 
+
+fslint,fdupes
+
+для похожих фото - geeqie

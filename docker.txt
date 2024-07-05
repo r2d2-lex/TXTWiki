@@ -1,0 +1,15 @@
+docker run -it ubuntu /bin/bash
+docker ps
+docker images
+
+# docker-compose build bot
+# docker-compose run bot
+# docker-compose up --build bot
+
+docker-compose up -d
+docker-compose logs bot
+docker-compose exec bot sh
+docker-compose stop bot
+
+docker-compose down
+
