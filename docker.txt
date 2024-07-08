@@ -1,15 +1,27 @@
 docker run -it ubuntu /bin/bash
 docker ps
 docker images
+docker network ls
 
 # docker-compose build bot
+# docker-compose build: для сборки образов, определенных в файле docker-compose.yml.
+Например, команда "docker-compose build" соберет все образы, указанные в файле docker-compose.yml.
+
 # docker-compose run bot
 # docker-compose up --build bot
 
 docker-compose up -d
+docker-compose up -d [SERVICE]: для запуска конкретной службы из файла docker-compose.yml. 
+Например, команда "docker-compose up nextcloud" запустит только контейнер nextcloud из файла docker-compose.yml который был остановлен
+
 docker-compose logs bot
 docker-compose exec bot sh
 docker-compose stop bot
 
-docker-compose down
+docker-compose down - для остановки и удаления всех контейнеров, определенных в файле docker-compose.yml. 
+docker-compose ps - список контейнеров
 
+docker-compose config
+docker-compose exec [SERVICE] [COMMAND]: для выполнения команды внутри контейнера, определенного в файле docker-compose.yml
+
+https://www.dmosk.ru/miniinstruktions.php?mini=docker-compose-examples
