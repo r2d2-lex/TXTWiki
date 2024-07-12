@@ -1,7 +1,33 @@
+docker create --name test alpine
+docker start test
+docker stop test
 docker run -it ubuntu /bin/bash
 docker ps
 docker images
 docker network ls
+docker stats - вывод информации о ресурсах используемых контейнерами
+docker inspect redis - вывод json информации о контейнере
+docker logs redis - пример вывода логов контейнера
+docker logs redis -f
+docker exec -it help_bot /bin/sh -интерактивный запуск команды в контейнере на примере Alpine
+
+docker image ls - просмотр imagee контейнеров
+docker image import
+docker image rm - удаляет image
+docker rm - удаляет контейнер
+docker image prune - Remove unused images
+
+Dockerfile:
+ADD myarc.tar.gz /somedir/ - ADD разархивирует архив в папку
+ADD http://url.com/data.tar.gz /somedir/ - ADD скачает файл в папку
+ADD --chown=root files* /somedir/
+SHELL ["/bin/sh", "-c"] - команда запуска
+RUN echo hello
+ENV FOO=1
+ENV BAR=$FOO
+
+
+<<<< DOCKER COMPOSE >>>>>
 
 # docker-compose build bot
 # docker-compose build: для сборки образов, определенных в файле docker-compose.yml.
