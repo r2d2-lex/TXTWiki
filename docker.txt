@@ -1,10 +1,15 @@
+<<<< DOCKER >>>>
+
 docker create --name test alpine
 docker start test
 docker stop test
 docker run -it ubuntu /bin/bash
 docker ps
 docker images
+
 docker network ls
+docker network inspect bridge
+
 docker stats - вывод информации о ресурсах используемых контейнерами
 docker inspect redis - вывод json информации о контейнере
 docker logs redis - пример вывода логов контейнера
@@ -16,6 +21,11 @@ docker image import
 docker image rm - удаляет image
 docker rm - удаляет контейнер
 docker image prune - Remove unused images
+
+docker volume ls
+docker volume inspect
+docker cp appvol:/opt/data/. /home/user1/data - копирует данные из контейнера в локальную папку
+docker cp /home/user1/data appvol:/opt/data/ - копирует данные из локальной папки в контейнер
 
 Dockerfile:
 ADD myarc.tar.gz /somedir/ - ADD разархивирует архив в папку
