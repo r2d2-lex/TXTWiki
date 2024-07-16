@@ -60,4 +60,12 @@ docker-compose ps - список контейнеров
 docker-compose config
 docker-compose exec [SERVICE] [COMMAND]: для выполнения команды внутри контейнера, определенного в файле docker-compose.yml
 
-https://www.dmosk.ru/miniinstruktions.php?mini=docker-compose-examples
+
+<<<< docker-compose.yml >>>>>
+
+servives:
+  service:
+    env_file:
+      - .env    <- передача переменных из env файла
+
+COMPOSE_PROJECT_NAME - переменная подставляемая в prefix сервисов docker-compose
