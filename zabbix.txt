@@ -1,0 +1,2 @@
+zabbix_get -s 192.168.88.2 -k agent.ping
+zabbix_get -s 192.168.88.2 -k agent.version
