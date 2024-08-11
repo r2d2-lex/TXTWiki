@@ -1,0 +1,71 @@
+<<<< DOCKER >>>>
+
+docker create --name test alpine
+docker start test
+docker stop test
+docker run -it ubuntu /bin/bash
+docker ps
+docker images
+
+docker network ls
+docker network inspect bridge
+
+docker stats - вывод информации о ресурсах используемых контейнерами
+docker inspect redis - вывод json информации о контейнере
+docker logs redis - пример вывода логов контейнера
+docker logs redis -f
+docker exec -it help_bot /bin/sh -интерактивный запуск команды в контейнере на примере Alpine
+
+docker image ls - просмотр imagee контейнеров
+docker image import
+docker image rm - удаляет image
+docker rm - удаляет контейнер
+docker image prune - Remove unused images
+
+docker volume ls
+docker volume inspect
+docker cp appvol:/opt/data/. /home/user1/data - копирует данные из контейнера в локальную папку
+docker cp /home/user1/data appvol:/opt/data/ - копирует данные из локальной папки в контейнер
+
+Dockerfile:
+ADD myarc.tar.gz /somedir/ - ADD разархивирует архив в папку
+ADD http://url.com/data.tar.gz /somedir/ - ADD скачает файл в папку
+ADD --chown=root files* /somedir/
+SHELL ["/bin/sh", "-c"] - команда запуска
+RUN echo hello
+ENV FOO=1
+ENV BAR=$FOO
+
+
+<<<< DOCKER COMPOSE >>>>>
+
+# docker-compose build bot
+# docker-compose build: для сборки образов, определенных в файле docker-compose.yml.
+Например, команда "docker-compose build" соберет все образы, указанные в файле docker-compose.yml.
+
+# docker-compose run bot
+# docker-compose up --build bot
+
+docker-compose up -d
+docker-compose up -d [SERVICE]: для запуска конкретной службы из файла docker-compose.yml. 
+Например, команда "docker-compose up nextcloud" запустит только контейнер nextcloud из файла docker-compose.yml который был остановлен
+
+docker-compose logs bot
+docker-compose exec bot sh
+docker-compose stop bot
+
+docker-compose down - для остановки и удаления всех контейнеров, определенных в файле docker-compose.yml. 
+docker-compose ps - список контейнеров
+
+docker-compose config
+docker-compose exec [SERVICE] [COMMAND]: для выполнения команды внутри контейнера, определенного в файле docker-compose.yml
+
+
+<<<< docker-compose.yml >>>>>
+
+servives:
+  service:
+    env_file:
+      - .env    <- передача переменных из env файла
+
+COMPOSE_PROJECT_NAME - переменная подставляемая в prefix сервисов docker-compose

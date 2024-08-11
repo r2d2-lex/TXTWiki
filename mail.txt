@@ -1,3 +1,8 @@
+echo "Test of Mail body" | mail -s "Mail subject" to@example.com
+
+
+
+
 формат представления даты
 число отображённых сообщений
 
