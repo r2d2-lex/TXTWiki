@@ -1,0 +1,8 @@
+Установка переменной окружения в power-shell:
+$env:PYTHONPATH = "C:\Users\user\PycharmProjects\project\app"
+
+Просмотр:
+echo $env:PYTHONPATH
+
+В Linux bash:
+export PYTHONPATH=/home/user/PycharmProjects/project/app

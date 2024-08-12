@@ -29,3 +29,11 @@ GRANT SELECT ON ALL SEQUENCES IN SCHEMA public TO newuser2;
 GRANT SELECT ON ALL TABLES IN SCHEMA public TO newuser2;
 ALTER ROLE newuser2 WITH Superuser;
 __________
+
+Разрешаем подключаться отовсюду:
+
+"postgresql.conf":
+listen_addresses = '*'
+
+"pg_hba.conf":
+host    all             all             0.0.0.0/0            md5
